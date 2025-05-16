@@ -5,9 +5,18 @@ function App() {
   const [urls, setUrls] = useState("");
   const [instruction, setInstruction] = useState("");
   
-  const handleSubmit = () => {
-    console.log(urls)
-    console.log(instruction)
+  const handleSubmit = async () => {
+    try {
+    const response = await fetch('http://localhost:4000/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urls, instruction }),
+    });
+      const data = await response.json();
+      alert(data.result);
+    } catch (error) {
+      alert('Error: ' + error.message);
+    }
   }
 
   return (
