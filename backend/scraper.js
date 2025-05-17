@@ -3,12 +3,14 @@ import { scrapeColes } from './scrapers/coles.js';
 import { scrapeWoolworths } from './scrapers/woolworths.js';
 import { scrapeBws } from './scrapers/bws.js';
 import { scrapeKmart } from './scrapers/kmart.js';
+import { scrapeTarget } from './scrapers/target.js';
 
 const siteScrapers = {
   'coles.com.au': scrapeColes,
   'woolworths.com.au': scrapeWoolworths,
   'bws.com.au': scrapeBws,
   'kmart.com.au': scrapeKmart,
+  'target.com.au': scrapeTarget,
 };
 
 async function safeGoto(page, url, retries = 3) {

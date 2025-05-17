@@ -76,8 +76,13 @@ async function scrapeStarRating(page) {
 export async function scrapeBws(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
-      const el = document.querySelector(selector);
-      return el ? el.innerText.trim() : null;
+        const el = document.querySelector(selector);
+        return el ? el.innerText.trim() : null;
+    };
+
+    const getImage = (selector) => {
+        const el = document.querySelector(selector);
+        return el ? el.src : null;
     };
 
     return {
