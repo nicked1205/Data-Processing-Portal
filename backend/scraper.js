@@ -12,6 +12,7 @@ import { scrapeBunnings } from './scrapers/bunnings.js';
 import { scrapeJbhifi } from './scrapers/jbhifi.js';
 import { scrapeBigW } from './scrapers/bigw.js';
 import { scrapeChemist } from './scrapers/chemist.js';
+import { scrapeSephora } from './scrapers/sephora.js';
 
 const siteScrapers = {
   'coles.com.au': scrapeColes,
@@ -25,6 +26,7 @@ const siteScrapers = {
   'jbhifi.com.au': scrapeJbhifi,
   'bigw.com.au': scrapeBigW,
   'chemistwarehouse.com.au': scrapeChemist,
+  'sephora.com.au': scrapeSephora,
 };
 
 puppeteerExtra.use(StealthPlugin());
