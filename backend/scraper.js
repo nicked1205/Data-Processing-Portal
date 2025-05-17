@@ -1,9 +1,12 @@
 import { launch } from 'puppeteer';
+import puppeteerExtra from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { scrapeColes } from './scrapers/coles.js';
 import { scrapeWoolworths } from './scrapers/woolworths.js';
 import { scrapeBws } from './scrapers/bws.js';
 import { scrapeKmart } from './scrapers/kmart.js';
 import { scrapeTarget } from './scrapers/target.js';
+import { scrapePriceline } from './scrapers/priceline.js';
 
 const siteScrapers = {
   'coles.com.au': scrapeColes,
@@ -11,12 +14,15 @@ const siteScrapers = {
   'bws.com.au': scrapeBws,
   'kmart.com.au': scrapeKmart,
   'target.com.au': scrapeTarget,
+  'priceline.com.au': scrapePriceline,
 };
+
+puppeteerExtra.use(StealthPlugin());
 
 async function safeGoto(page, url, retries = 3) {
   for (let i = 0; i < retries; i++) {
     try {
-      await page.goto(url, { waitUntil: 'networkidle2' });
+      await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
       return;
     } catch (e) {
       if (i === retries - 1) throw e;
@@ -26,7 +32,7 @@ async function safeGoto(page, url, retries = 3) {
 }
 
 export async function scrapeProduct(url) {
-  const browser = await launch({ headless: true, ignoreHTTPSErrors: true });
+  const browser = await puppeteerExtra.launch({ headless: true, ignoreHTTPSErrors: true });
   const page = await browser.newPage();
 
    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
