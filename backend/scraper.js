@@ -2,11 +2,13 @@ import { launch } from 'puppeteer';
 import { scrapeColes } from './scrapers/coles.js';
 import { scrapeWoolworths } from './scrapers/woolworths.js';
 import { scrapeBws } from './scrapers/bws.js';
+import { scrapeKmart } from './scrapers/kmart.js';
 
 const siteScrapers = {
   'coles.com.au': scrapeColes,
   'woolworths.com.au': scrapeWoolworths,
   'bws.com.au': scrapeBws,
+  'kmart.com.au': scrapeKmart,
 };
 
 async function safeGoto(page, url, retries = 3) {
