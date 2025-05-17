@@ -8,6 +8,7 @@ import { scrapeKmart } from './scrapers/kmart.js';
 import { scrapeTarget } from './scrapers/target.js';
 import { scrapePriceline } from './scrapers/priceline.js';
 import { scrapeOfficeworks } from './scrapers/officeworks.js';
+import { scrapeBunnings } from './scrapers/bunnings.js';
 
 const siteScrapers = {
   'coles.com.au': scrapeColes,
@@ -17,6 +18,7 @@ const siteScrapers = {
   'target.com.au': scrapeTarget,
   'priceline.com.au': scrapePriceline,
   'officeworks.com.au': scrapeOfficeworks,
+  'bunnings.com.au': scrapeBunnings,
 };
 
 puppeteerExtra.use(StealthPlugin());
@@ -37,7 +39,8 @@ export async function scrapeProduct(url) {
   const browser = await puppeteerExtra.launch({ headless: true, ignoreHTTPSErrors: true });
   const page = await browser.newPage();
 
-   await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
+  await page.setViewport({ width: 1280, height: 800 });
 
   try {
     await safeGoto(page, url);
