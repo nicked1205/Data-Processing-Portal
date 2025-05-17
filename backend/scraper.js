@@ -7,6 +7,7 @@ import { scrapeBws } from './scrapers/bws.js';
 import { scrapeKmart } from './scrapers/kmart.js';
 import { scrapeTarget } from './scrapers/target.js';
 import { scrapePriceline } from './scrapers/priceline.js';
+import { scrapeOfficeworks } from './scrapers/officeworks.js';
 
 const siteScrapers = {
   'coles.com.au': scrapeColes,
@@ -15,6 +16,7 @@ const siteScrapers = {
   'kmart.com.au': scrapeKmart,
   'target.com.au': scrapeTarget,
   'priceline.com.au': scrapePriceline,
+  'officeworks.com.au': scrapeOfficeworks,
 };
 
 puppeteerExtra.use(StealthPlugin());
