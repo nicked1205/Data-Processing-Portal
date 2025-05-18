@@ -67,7 +67,7 @@ Please follow these steps:
       temperature: 0,
     });
 
-    const csv = completion.choices[0].message.content.trim().replace(/^```csv\s*/, '').replace(/```$/, '').trim();
+    const csv = completion.choices[0].message.content.trim().replace(/^```csv\s*/, '').replace(/^```plaintext\s*/, '').replace(/```$/, '').trim();
 
     res.json({ csv });
   } catch (e) {
