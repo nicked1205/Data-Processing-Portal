@@ -60,11 +60,13 @@ npm install
 Ensure you have the following environment variables set for the backend:
 
 OPENAI_API_KEY
+PORT
 
 Create a .env file in the backend directory and add the following:
 
 ```env
 OPENAI_API_KEY=yourgptapikey
+PORT=4000
 ```
 
 ### 4. Run the Project Locally
