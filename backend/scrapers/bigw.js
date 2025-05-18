@@ -69,6 +69,21 @@ async function scrapeLabels(page) {
 //   });
 // }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('div[class^="ProductImageGallery_ProductImageGallery"] img');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapeBigW(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -95,6 +110,7 @@ export async function scrapeBigW(page) {
   const variants = await scrapeVariants(page);
   const labels = await scrapeLabels(page);
 //   const starRating = await scrapeStarRating(page);
+  const imgSources = await scrapeImages(page);
 
   return {
     ...productData,
@@ -102,5 +118,6 @@ export async function scrapeBigW(page) {
     specs,
     variants,
     labels,
+    imgSources,
   };
 }

@@ -126,6 +126,21 @@ async function scrapeSpecifications(page) {
   });
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('button.group/thumbnail img');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapeBunnings(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -151,11 +166,13 @@ export async function scrapeBunnings(page) {
     const features = await scrapeFeatures(page);
     await expandSpecificationsSection(page);
     const specifications = await scrapeSpecifications(page);
+    const imgSources = await scrapeImages(page);
 
   return {
     ...productData,
     starRating,
     features,
     specifications,
+    imgSources,
   };
 }

@@ -37,6 +37,21 @@ async function scrapeAttributes(page) {
   });
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('img[data-testid^="product-image"]');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapeColes(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -71,10 +86,12 @@ export async function scrapeColes(page) {
 
   const nutrition = await scrapeNutritionalInfo(page);
   const attributes = await scrapeAttributes(page);
+  const imageSources = await scrapeImages(page);
 
   return {
     ...productData,
     nutrition,
     attributes,
+    imageSources,
   };
 }

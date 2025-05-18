@@ -147,6 +147,21 @@ async function scrapeVariants(page) {
   });
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('div.desktop-image-carousel');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapeSephora(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -180,6 +195,7 @@ export async function scrapeSephora(page) {
   const description = await scrapeDescription(page);
   const ingredients = await scrapeIngredients(page);
   const variants = await scrapeVariants(page);
+  const imgSources = await scrapeImages(page);
 
   return {
     ...productData,
@@ -187,5 +203,6 @@ export async function scrapeSephora(page) {
     description,
     ingredients,
     variants,
+    imgSources,
   };
 }

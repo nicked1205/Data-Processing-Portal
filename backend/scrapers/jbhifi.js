@@ -56,6 +56,21 @@ async function scrapeVariants(page) {
   });
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('div[class^="Grid_gridStyles"] img');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapeJbhifi(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -88,10 +103,12 @@ export async function scrapeJbhifi(page) {
 
   const specs = await scrapeSpecs(page);
   const variantsAndPrices = await scrapeVariants(page);
+  const imgSources = await scrapeImages(page);
 
   return {
     ...productData,
     specs,
     variantsAndPrices,
+    imgSources,
   };
 }

@@ -5,6 +5,21 @@ async function scrapeProductStarRating(page) {
   });
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('div[aria-label="Slider Page"] img');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 async function scrapeSpecificationsByCategory(page) {
   return await page.evaluate(() => {
     const categories = {};
@@ -110,6 +125,7 @@ export async function scrapeOfficeworks(page) {
     const specifications = await scrapeSpecificationsByCategory(page);
     const options = await scrapeProductOptions(page);
     const badge = await scrapeBadge(page);
+    const imgSources = await scrapeImages(page);
 
   return {
     ...productData,
@@ -117,5 +133,6 @@ export async function scrapeOfficeworks(page) {
     options,
     badge,
     specifications,
+    imgSources,
   };
 }

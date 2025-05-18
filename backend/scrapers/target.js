@@ -64,6 +64,22 @@ async function scrapeBadges(page) {
   });
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('div[data-testid="gallery-grid"] img');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
+
 export async function scrapeTarget(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -88,11 +104,13 @@ export async function scrapeTarget(page) {
   const sizes = await scrapeProductSizes(page);
   const colors = await scrapeProductColors(page);
   const badges = await scrapeBadges(page);
+  const imgSources = await scrapeImages(page);
 
   return {
     ...productData,
     sizes,
     colors,
-    badges
+    badges,
+    imgSources,
   };
 }

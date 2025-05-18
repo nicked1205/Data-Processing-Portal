@@ -1,3 +1,18 @@
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('img.hero_image, img.sub_image');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapeChemist(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -33,7 +48,10 @@ export async function scrapeChemist(page) {
     };
   });
 
+  const imgSources = await scrapeImages(page);
+
   return {
     ...productData,
+    imgSources,
   };
 }

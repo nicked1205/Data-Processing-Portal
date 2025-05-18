@@ -32,6 +32,21 @@ async function scrapeInfo(page, panelName) {
 
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('api-product-image img');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapePriceline(page) {    
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -59,11 +74,13 @@ export async function scrapePriceline(page) {
   const moreInfo = await scrapeInfo(page, 'panel-0');
   const directionsAndIngredients = await scrapeInfo(page, 'panel-2');
   const warningsAndDisclaimers = await scrapeInfo(page, 'panel-3');
+  const imgSources = await scrapeImages(page);
 
   return {
     ...productData,
     moreInfo,
     directionsAndIngredients,
     warningsAndDisclaimers,
+    imgSources,
   };
 }

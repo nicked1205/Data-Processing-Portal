@@ -73,6 +73,21 @@ async function scrapeStarRating(page) {
   });
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('img.product-image');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapeBws(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
@@ -96,11 +111,13 @@ export async function scrapeBws(page) {
     const additionalDetails = await scrapeAdditionalDetails(page);
     const packOptions = await scrapePackOptions(page);
     const starRating = await scrapeStarRating(page);
+    const imgSources = await scrapeImages(page);
 
   return {
     ...productData,
     additionalDetails,
     packOptions,
     starRating,
+    imgSources,
   };
 }

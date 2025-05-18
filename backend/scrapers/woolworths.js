@@ -29,16 +29,26 @@ async function scrapeBadges(page) {
   });
 }
 
+async function scrapeImages(page) {
+  return await page.evaluate(() => {
+    const images = [];
+    const imageElements = document.querySelectorAll('div[class^="image-thumbnails_thumbnails"] img');
+
+    imageElements.forEach(img => {
+      if (img.src) {
+        images.push(img.src.trim());
+      }
+    });
+
+    return images;
+  });
+}
+
 export async function scrapeWoolworths(page) {
   const productData = await page.evaluate(() => {
     const getText = (selector) => {
         const el = document.querySelector(selector);
         return el ? el.innerText.trim() : null;
-    };
-
-    const getImage = (selector) => {
-        const el = document.querySelector(selector);
-        return el ? el.src : null;
     };
 
     return {
@@ -50,10 +60,12 @@ export async function scrapeWoolworths(page) {
 
   const combinedInfo = await scrapeAllInfoCombined(page);
   const badges = await scrapeBadges(page);
+  const imageSources = await scrapeImages(page);
 
   return {
     ...productData,
     combinedInfo,
     badges,
+    imageSources,
   };
 }
