@@ -9,11 +9,27 @@ async function scrapeBadgeandPromotion (page) {
         '1107': 'Save 40%, Member Exclusive',
     }
 
-    return await page.evaluate(() => {
-        const el = document.querySelector('cx-media.promo-img.is-initialized img');
-        if (el && el.alt) return altText[el.alt];
+    return await page.evaluate((altMap) => {
+        const el = document.querySelector('cx-media.promo-img img');
+        if (el && el.alt) return altMap[el.alt];
         else return null;
-    });
+    }, altText);
+}
+
+async function scrapeInfo(page, panelName) {
+  try {
+        await page.click(`button[aria-controls="${panelName}"]`);
+        await page.waitForSelector(`#${panelName}`, { visible: true, timeout: 5000 });
+    } catch (error) {
+        return null;
+    }
+
+    return await page.evaluate((panel) => {
+        const el = document.querySelector(`#${panel}`);
+        if (el) return el.innerText.trim();
+        else return null;
+    }, panelName);
+
 }
 
 export async function scrapePriceline(page) {    
@@ -36,14 +52,18 @@ export async function scrapePriceline(page) {
         starRating: getText('div.rating-detail-inner span.font-big'),
         description: getText('span.sanitize'),
         badge: getText('span[data-testid="product-badge"]'),
-        moreInfo: getText('#panel-0'),
-        directionsAndIngredients: getText('#panel-2'),
-        warningsAndDisclaimers: getText('#panel-3'),
         promotion: getText('div.pill-container'),
     };
   });
 
+  const moreInfo = await scrapeInfo(page, 'panel-0');
+  const directionsAndIngredients = await scrapeInfo(page, 'panel-2');
+  const warningsAndDisclaimers = await scrapeInfo(page, 'panel-3');
+
   return {
     ...productData,
+    moreInfo,
+    directionsAndIngredients,
+    warningsAndDisclaimers,
   };
 }
