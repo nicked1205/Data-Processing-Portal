@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchProductData, generateCsv } from '../api/apis';
 
-function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setStatus, stage }) {
+function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setStatus, stage, setController }) {
     const [urls, setUrls] = useState("");
     const [instruction, setInstruction] = useState("");
     const [error, setError] = useState("");
@@ -32,7 +32,7 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
       }
       for (const u of urlList) {
         if (!isValidUrl(u)) {
-          setError(`Invalid URL detected: "${u}"`);
+          setError(`Invalid URL detected: ${u}`);
           return;
         }
       }
@@ -43,6 +43,8 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
       }
 
       let scrapedData = [];
+      const controller = new AbortController();
+      setController(controller);
       setStage(1);
 
       for (let index = 0; index < urlList.length; index++) {
@@ -50,25 +52,35 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
         try {
           console.log(`Fetching data for ${url}...`);
           setStatus(`Scraping data from URL... (${index + 1}/${urlList.length})`);
-          const data = await fetchProductData(url);
+          const data = await fetchProductData(url, controller.signal);
           console.log(data);
           if (data) scrapedData.push(data);
         } catch (error) {
-          console.error(`Error fetching data for ${url}:`, error);
+          if (error.name === 'AbortError') {
+            setError('Aborted Submission');
+          } else {
+            console.error(`Error fetching data for ${url}:`, error);
+            setError('Failed to scrape url')
+          }
+          setStage(0);
         }
       }
 
       setStage(2);
       setStatus(`Turning scraped data into Excel file...`);
-      console.log('Turning the scraped data into Excel base64');
+      console.log('Turning the scraped data into csv');
 
       try {
-        const { csv: csvString } = await generateCsv(scrapedData, instruction);
+        const { csv: csvString } = await generateCsv(scrapedData, instruction, controller.signal);
         localStorage.setItem("csvString", csvString);
         console.log(csvString);
         setStage(3);
       } catch (e) {
-        setError("Failed to generate CSV from scraped data.");
+        if (e.name === 'AbortError') {
+          setError("Aborted Submission");
+        } else {
+          setError("Failed to generate CSV from scraped data");
+        }
         console.error(e);
         setStage(0);
       }
@@ -93,9 +105,9 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
     }, [instruction]);
 
   return (
-    <div className={`w-3/5 absolute-center
+    <div className={`z-10 w-3/5 absolute-center
       flex flex-col items-center justify-center gap-3 rounded-3xl overflow-hidden
-      bg-light-surface dark:bg-opacity-10 bg-opacity-30 duration-300 ${stage >= 1 ? 'h-0' : 'h-3/5'}`}>
+      bg-light-backgroundSecondary dark:bg-dark-backgroundSecondary duration-300 ease-in-out ${stage >= 1 ? 'h-0' : 'h-3/5'}`}>
         <div className='text-2xl text-center p-2'>
           <h2 className='text-light-primaryText dark:text-dark-primaryText font-bold duration-300'>
             Welcome to the Data Processing Portal
@@ -103,7 +115,7 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
           <h3 className='text-light-primaryText dark:text-dark-primaryText text-[0.7em] duration-300'>
             We advise you to read{' '}
             <span
-              className='cursor-pointer underline hover:text-light-primaryAccent dark:hover:text-dark-primaryAccent'
+              className='cursor-pointer underline hover:text-light-primaryAccent dark:hover:text-dark-primaryAccent duration-300'
               onClick={() => {
                 setOpenInstructions(true);
               }}
@@ -112,7 +124,7 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
             </span>{' '}
             and{' '}
             <span
-              className='cursor-pointer underline hover:text-light-primaryAccent dark:hover:text-dark-primaryAccent'
+              className='cursor-pointer underline hover:text-light-primaryAccent dark:hover:text-dark-primaryAccent duration-300'
               onClick={() => {
                 setOpenDocumentations(true);
               }}
@@ -195,7 +207,7 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
           )}
         </div>
         {error !== '' && (
-          <div className="text-light-error dark:text-dark-error text-center font-semibold">
+          <div className="text-light-error dark:text-dark-error text-center font-semibold max-w-[65%] truncate">
             {error}
           </div>
         )}
