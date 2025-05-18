@@ -23,8 +23,6 @@ Before running the project locally, ensure that you have the following tools ins
 
 - [Node.js](https://nodejs.org/) (version 14 or later)
 - [npm](https://www.npmjs.com/) (Node package manager)
-- [Python](https://www.python.org/) (required for AI integration)
-- [MongoDB](https://www.mongodb.com/) (or a cloud-based MongoDB service like MongoDB Atlas, if required)
 
 ---
 
