@@ -1,31 +1,28 @@
 import React, { useState, useEffect } from 'react';
+import { fetchProductData, generateExcel } from '../api/excelGeneration';
 
 function InputForm({ setOpenInstructions, setOpenDocumentations }) {
     const [urls, setUrls] = useState("");
     const [instruction, setInstruction] = useState("");
-
-    const fetchProductData = async (url) =>{
-      const response = await fetch('http://localhost:4000/api/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
-      });
-      if (!response.ok) throw new Error('Failed to scrape');
-      const data = await response.json();
-      return data;
-    }
-    
+      
     const handleSubmit = async () => {
+      let scrapedData = [];
       for (const url of urls.split('\n')) {
           try {
             console.log(`Fetching data for ${url}...`);
             const data = await fetchProductData(url.trim());
             console.log(data);
-            console.log(`Turning data into Excel file based on prompt`);
+            scrapedData.push(data);
           } catch (error) {
             console.error(`Error fetching data for ${url}:`, error);
           }
       }
+      console.log('Turning the scraped data into Excel base64');
+      const { base64Excel: base64 } = await generateExcel(
+        scrapedData,
+        instruction,
+        'products.xlsx'
+      );
     }
 
     useEffect(() => {
