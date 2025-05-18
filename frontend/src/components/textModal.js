@@ -2,6 +2,7 @@ import Dimmer from "./dimmer";
 import { useState, useEffect } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
 
 function TextModal({ openTextModal, setOpenTextModal, markdownLink, title }) {
     const [markdown, setMarkdown] = useState('');
@@ -37,7 +38,7 @@ function TextModal({ openTextModal, setOpenTextModal, markdownLink, title }) {
                     </div>
                 </div>
                 <div className="prose max-w-none mt-1 mb-1 p-6 text-light-primaryText dark:text-dark-primaryText max-h-[calc(100%-4rem)] overflow-auto custom-scrollbar">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={rehypeHighlight}>{markdown}</ReactMarkdown>
                 </div>             
             </div>
             <Dimmer setOpen={setOpenTextModal} open={openTextModal}/>

@@ -21,7 +21,7 @@ function App() {
       <InputForm setOpenInstructions={setOpenInstructions} setOpenDocumentations={setOpenDocumentations}
          setStage={setStage} setStatus={setStatus} stage={stage} setController={setController} />
       <TextModal openTextModal={openInstructions} setOpenTextModal={setOpenInstructions} markdownLink={"/instructions.md"} title={"Instructions"} />
-      <TextModal openTextModal={openDocumentations} setOpenTextModal={setOpenDocumentations} title={"Documentations"} />
+      <TextModal openTextModal={openDocumentations} setOpenTextModal={setOpenDocumentations} markdownLink={"/documentation.md"} title={"Documentations"} />
       <Settings setOpenSettings={setOpenSettings} openSettings={openSettings}/>
       <Loader stage={stage} status={status} controller={controller} />
       <DownloadPanel stage={stage} setStage={setStage} />
