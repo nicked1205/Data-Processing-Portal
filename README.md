@@ -1,70 +1,94 @@
-# Getting Started with Create React App
+# Data Processing Portal
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+The **Data Processing Portal** is a web application that allows users to provide product URLs from popular eCommerce websites (e.g., Coles, Woolworths, BWS, Kmart, Target) and receive a curated spreadsheet with selected product data. The user can specify which product details they want to extract, such as product name, description, price, and image URL.
 
-In the project directory, you can run:
+This platform scrapes the URLs and then use AI to curate product data from the provided URLs and transform it into a spreadsheet format. The backend handles URL scraping, data processing, and AI integration, while the frontend provides an interface for user input and results.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Users can provide one or multiple URLs at a time.
+- Allows users to specify the data they want to extract from the URLs (e.g., product name, price, description).
+- AI is used to transform the scraped data into a user-defined format (e.g., CSV).
+- Supports popular eCommerce websites (Coles, Woolworths, BWS, Kmart, Target, etc.).
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Prerequisites
 
-### `npm run build`
+Before running the project locally, ensure that you have the following tools installed:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- [Node.js](https://nodejs.org/) (version 14 or later)
+- [npm](https://www.npmjs.com/) (Node package manager)
+- [Python](https://www.python.org/) (required for AI integration)
+- [MongoDB](https://www.mongodb.com/) (or a cloud-based MongoDB service like MongoDB Atlas, if required)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Setup Instructions
 
-### `npm run eject`
+### 1. Clone the Repository
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Clone the project to your local machine:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```git
+git clone https://github.com/your-username/data-processing-portal.git
+cd data-processing-portal
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 2. Install Dependencies
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The project has both frontend and backend dependencies. Navigate to the root directory and run the following command to install dependencies for both:
 
-## Learn More
+#### Install backend dependencies (Node.js)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+cd ./backend
+npm install
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### Install frontend dependencies (React)
 
-### Code Splitting
+```bash
+cd ./frontend
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 3. Environment Variables
 
-### Analyzing the Bundle Size
+Ensure you have the following environment variables set for the backend:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+OPENAI_API_KEY
 
-### Making a Progressive Web App
+Create a .env file in the backend directory and add the following:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```env
+OPENAI_API_KEY=yourgptapikey
+```
 
-### Advanced Configuration
+### 4. Run the Project Locally
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+To start the backend and frontend servers:
 
-### Deployment
+#### Start the backend (Express server):
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```bash
+cd ./backend
+npm start
+```
 
-### `npm run build` fails to minify
+#### Start the frontend (React app):
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+cd ./frontend
+node server.js
+```
+
+Both servers should now be running locally. Open the frontend in your browser by navigating to http://localhost:3000.
+
+## Additional Info
+
+You can read more about the project documentations and isntructions within the website.
