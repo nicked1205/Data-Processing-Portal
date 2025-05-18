@@ -52,6 +52,7 @@ export async function scrapeProduct(url) {
 
   try {
     await safeGoto(page, url);
+    await page.waitForSelector('body', { timeout: 30000 });
 
     const domain = new URL(url).hostname.replace('www.', '');
 

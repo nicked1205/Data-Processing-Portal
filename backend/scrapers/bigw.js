@@ -102,6 +102,5 @@ export async function scrapeBigW(page) {
     specs,
     variants,
     labels,
-    starRating,
   };
 }
