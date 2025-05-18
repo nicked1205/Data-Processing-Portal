@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { scrapeProduct } from './scraper.js';
-import { Configuration, OpenAIApi } from 'openai';
+import { OpenAI } from 'openai';
 
 dotenv.config();
 
@@ -10,10 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 // Scrape info
 app.post('/api/scrape', async (req, res) => {

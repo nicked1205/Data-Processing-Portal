@@ -1,28 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { fetchProductData, generateExcel } from '../api/excelGeneration';
 
-function InputForm({ setOpenInstructions, setOpenDocumentations }) {
+function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setStatus, stage }) {
     const [urls, setUrls] = useState("");
     const [instruction, setInstruction] = useState("");
       
     const handleSubmit = async () => {
       let scrapedData = [];
-      for (const url of urls.split('\n')) {
-          try {
-            console.log(`Fetching data for ${url}...`);
-            const data = await fetchProductData(url.trim());
-            console.log(data);
-            scrapedData.push(data);
-          } catch (error) {
-            console.error(`Error fetching data for ${url}:`, error);
-          }
+      setStage(1);
+      const urlList = urls.split('\n');
+      const length = urlList.length;
+      for (let index = 0; index < length; index++) {
+        const url = urlList[index];
+        try {
+          console.log(`Fetching data for ${url}...`);
+          setStatus(`Scraping data from URL... (${index + 1}/${length})`);
+          const data = await fetchProductData(url.trim());
+          console.log(data);
+          scrapedData.push(data);
+        } catch (error) {
+          console.error(`Error fetching data for ${url}:`, error);
+        }
       }
+      setStage(2);
+      setStatus(`Turning scraped data into Excel file...`);
       console.log('Turning the scraped data into Excel base64');
       const { base64Excel: base64 } = await generateExcel(
         scrapedData,
         instruction,
         'products.xlsx'
       );
+      localStorage.setItem("excelFileBase64", base64);
     }
 
     useEffect(() => {
@@ -44,9 +52,9 @@ function InputForm({ setOpenInstructions, setOpenDocumentations }) {
     }, [instruction]);
 
   return (
-    <div className='w-3/5 h-3/5 absolute-center
-      flex flex-col items-center justify-center gap-3 rounded-3xl
-      bg-light-surface dark:bg-opacity-10 bg-opacity-30 duration-300'>
+    <div className={`w-3/5 h-3/5 absolute-center
+      flex flex-col items-center justify-center gap-3 rounded-3xl overflow-hidden
+      bg-light-surface dark:bg-opacity-10 bg-opacity-30 duration-300 ${stage !== 0 ? 'h-0' : ''}`}>
         <div className='text-2xl text-center p-2'>
           <h2 className='text-light-primaryText dark:text-dark-primaryText font-bold duration-300'>
             Welcome to the Data Processing Portal
@@ -76,7 +84,7 @@ function InputForm({ setOpenInstructions, setOpenDocumentations }) {
         <div className='relative h-1/5 w-3/4'>
           <textarea
             className='h-full w-full bg-light-surface dark:bg-dark-surface text-light-primaryText dark:text-dark-primaryText resize-none rounded-lg p-2 pr-12 
-              focus:outline-light-divider dark:focus:outline-dark-divider placeholder:text-light-secondaryText dark:placeholder:text-dark-secondaryText duration-300'
+              focus:outline-light-divider dark:focus:outline-dark-divider placeholder:text-light-secondaryText dark:placeholder:text-dark-secondaryText duration-300 custom-scrollbar'
             value={urls}
             onChange={(e) => setUrls(e.target.value)}
             placeholder="Enter product URLs (one per line)"
@@ -109,7 +117,7 @@ function InputForm({ setOpenInstructions, setOpenDocumentations }) {
         <div className='h-2/5 w-3/4 relative'>
           <textarea
             className='h-full w-full bg-light-surface dark:bg-dark-surface text-light-primaryText dark:text-dark-primaryText resize-none rounded-lg p-2 pr-10 
-              ocus:outline-light-divider dark:focus:outline-dark-divider placeholder:text-light-secondaryText dark:placeholder:text-dark-secondaryText duration-300'
+              ocus:outline-light-divider dark:focus:outline-dark-divider placeholder:text-light-secondaryText dark:placeholder:text-dark-secondaryText duration-300 custom-scrollbar'
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
             placeholder="Enter curation instructions"

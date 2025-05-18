@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-function TopMenu({ setOpenSettings, setOpenInstructions, setOpenDocumentations }) {
+function TopMenu({ setOpenSettings, setOpenInstructions, setOpenDocumentations, stage }) {
     const [openMenu, setOpenMenu] = useState(true)
 
     return (
         <div id="topMenu" className={`absolute top-0 left-0 h-[5%] w-fit bg-light-primaryAccent dark:bg-dark-primaryAccent rounded-br-3xl
-            shadow-md ${!openMenu ? '-translate-x-[83%]' : ''} duration-500 ease-in-out`}>
+            shadow-md ${!openMenu ? '-translate-x-[83%]' : ''} ${stage >= 1 ? '-translate-x-[110%]' : ''} duration-500 ease-in-out`}>
             <div className="w-full h-full flex pl-4 pr-4 gap-4">
                 <div id="instructionsBtn" className="text-light-primaryText dark:text-dark-primaryText h-fit mt-auto mb-auto p-1.5 rounded-xl
                     hover:bg-light-surface hover:bg-opacity-20 hover:cursor-pointer duration-300"
