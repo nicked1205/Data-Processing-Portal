@@ -23,5 +23,6 @@ app.post('/api/scrape', async (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
+  console.log(`API Key: ${process.env.OPENAI_API_KEY}`)
   console.log(`Backend server running on port ${PORT}`);
 });
