@@ -1,0 +1,127 @@
+import React, { useState, useEffect } from 'react';
+
+function InputForm() {
+    const [urls, setUrls] = useState("");
+    const [instruction, setInstruction] = useState("");
+
+    const fetchProductData = async (url) =>{
+      const response = await fetch('http://localhost:4000/api/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      if (!response.ok) throw new Error('Failed to scrape');
+      const data = await response.json();
+      return data;
+    }
+    
+    const handleSubmit = async () => {
+      for (const url of urls.split('\n')) {
+          try {
+          console.log(`Fetching data for ${url}...`);
+          const data = await fetchProductData(url.trim());
+          console.log(data);
+          } catch (error) {
+          console.error(`Error fetching data for ${url}:`, error);
+          }
+      }
+    }
+
+    useEffect(() => {
+      const savedUrl = localStorage.getItem('urls');
+      if (savedUrl) setUrls(savedUrl);
+    }, []);
+
+    useEffect(() => {
+      localStorage.setItem('urls', urls);
+    }, [urls]);
+
+    useEffect(() => {
+      const savedPrompt = localStorage.getItem('prompt');
+      if (savedPrompt) setInstruction(savedPrompt);
+    }, []);
+
+    useEffect(() => {
+      localStorage.setItem('prompt', instruction);
+    }, [instruction]);
+
+  return (
+    <div className='w-3/5 h-3/5 absolute-center
+      flex flex-col items-center justify-center gap-3 rounded-3xl
+      bg-light-surface bg-opacity-30'>
+        <h2 className='text-light-primaryText font-bold text-xl p-2'>Welcome to the Data Processing Portal</h2>
+        <div className='relative h-1/5 w-3/4'>
+          <textarea
+            className='h-full w-full bg-light-surface text-light-primaryText resize-none rounded-lg p-2 pr-12 
+              focus:outline-light-divider placeholder:text-light-secondaryText'
+            value={urls}
+            onChange={(e) => setUrls(e.target.value)}
+            placeholder="Enter product URLs (one per line)"
+          />
+          { urls && (
+          <div className='absolute top-0 right-0 w-12 h-full flex flex-col p-2 gap-2'>
+            <span className='w-full aspect-square p-1.5 rounded-full 
+              hover:bg-light-background hover:bg-opacity-70 duration-300 hover:cursor-pointer'
+              onClick={() => {
+                setUrls('');
+              }}>
+              <svg fill="#1E3A8A" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.428 482.429">
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                <g id="SVGRepo_iconCarrier"> 
+                  <g> 
+                    <g> 
+                      <path d="M381.163,57.799h-75.094C302.323,25.316,274.686,0,241.214,0c-33.471,0-61.104,25.315-64.85,57.799h-75.098 c-30.39,0-55.111,24.728-55.111,55.117v2.828c0,23.223,14.46,43.1,34.83,51.199v260.369c0,30.39,24.724,55.117,55.112,55.117 h210.236c30.389,0,55.111-24.729,55.111-55.117V166.944c20.369-8.1,34.83-27.977,34.83-51.199v-2.828 C436.274,82.527,411.551,57.799,381.163,57.799z M241.214,26.139c19.037,0,34.927,13.645,38.443,31.66h-76.879 C206.293,39.783,222.184,26.139,241.214,26.139z M375.305,427.312c0,15.978-13,28.979-28.973,28.979H136.096 c-15.973,0-28.973-13.002-28.973-28.979V170.861h268.182V427.312z M410.135,115.744c0,15.978-13,28.979-28.973,28.979H101.266 c-15.973,0-28.973-13.001-28.973-28.979v-2.828c0-15.978,13-28.979,28.973-28.979h279.897c15.973,0,28.973,13.001,28.973,28.979 V115.744z"></path>
+                      <path d="M171.144,422.863c7.218,0,13.069-5.853,13.069-13.068V262.641c0-7.216-5.852-13.07-13.069-13.07 c-7.217,0-13.069,5.854-13.069,13.07v147.154C158.074,417.012,163.926,422.863,171.144,422.863z"></path> 
+                      <path d="M241.214,422.863c7.218,0,13.07-5.853,13.07-13.068V262.641c0-7.216-5.854-13.07-13.07-13.07 c-7.217,0-13.069,5.854-13.069,13.07v147.154C228.145,417.012,233.996,422.863,241.214,422.863z"></path> 
+                      <path d="M311.284,422.863c7.217,0,13.068-5.853,13.068-13.068V262.641c0-7.216-5.852-13.07-13.068-13.07 c-7.219,0-13.07,5.854-13.07,13.07v147.154C298.213,417.012,304.067,422.863,311.284,422.863z"></path> 
+                    </g> 
+                  </g> 
+                </g>
+              </svg>
+            </span>
+          </div>
+          )}
+        </div>
+        <div className='h-2/5 w-3/4 relative'>
+          <textarea
+            className='h-full w-full bg-light-surface text-light-primaryText resize-none rounded-lg p-2 pr-10 
+              focus:outline-light-divider placeholder:text-light-secondaryText'
+            value={instruction}
+            onChange={(e) => setInstruction(e.target.value)}
+            placeholder="Enter curation instructions"
+          />
+          { instruction && (
+            <div className='absolute top-0 right-0 w-12 h-full flex flex-col p-2 gap-2'>
+              <span className='w-full aspect-square p-1.5 rounded-full 
+                hover:bg-light-background hover:bg-opacity-70 duration-300 hover:cursor-pointer'
+                onClick={() => {
+                  setInstruction('');
+                }}>
+                <svg fill="#1E3A8A" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.428 482.429">
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                  <g id="SVGRepo_iconCarrier"> 
+                    <g> 
+                      <g> 
+                        <path d="M381.163,57.799h-75.094C302.323,25.316,274.686,0,241.214,0c-33.471,0-61.104,25.315-64.85,57.799h-75.098 c-30.39,0-55.111,24.728-55.111,55.117v2.828c0,23.223,14.46,43.1,34.83,51.199v260.369c0,30.39,24.724,55.117,55.112,55.117 h210.236c30.389,0,55.111-24.729,55.111-55.117V166.944c20.369-8.1,34.83-27.977,34.83-51.199v-2.828 C436.274,82.527,411.551,57.799,381.163,57.799z M241.214,26.139c19.037,0,34.927,13.645,38.443,31.66h-76.879 C206.293,39.783,222.184,26.139,241.214,26.139z M375.305,427.312c0,15.978-13,28.979-28.973,28.979H136.096 c-15.973,0-28.973-13.002-28.973-28.979V170.861h268.182V427.312z M410.135,115.744c0,15.978-13,28.979-28.973,28.979H101.266 c-15.973,0-28.973-13.001-28.973-28.979v-2.828c0-15.978,13-28.979,28.973-28.979h279.897c15.973,0,28.973,13.001,28.973,28.979 V115.744z"></path>
+                        <path d="M171.144,422.863c7.218,0,13.069-5.853,13.069-13.068V262.641c0-7.216-5.852-13.07-13.069-13.07 c-7.217,0-13.069,5.854-13.069,13.07v147.154C158.074,417.012,163.926,422.863,171.144,422.863z"></path> 
+                        <path d="M241.214,422.863c7.218,0,13.07-5.853,13.07-13.068V262.641c0-7.216-5.854-13.07-13.07-13.07 c-7.217,0-13.069,5.854-13.069,13.07v147.154C228.145,417.012,233.996,422.863,241.214,422.863z"></path> 
+                        <path d="M311.284,422.863c7.217,0,13.068-5.853,13.068-13.068V262.641c0-7.216-5.852-13.07-13.068-13.07 c-7.219,0-13.07,5.854-13.07,13.07v147.154C298.213,417.012,304.067,422.863,311.284,422.863z"></path> 
+                      </g> 
+                    </g> 
+                  </g>
+                </svg>
+              </span>
+            </div>
+          )}
+        </div>
+        <button 
+          className='bg-light-primaryAccent pt-1 pb-1 pl-2 pr-2 rounded-xl text-light-primaryText 
+            hover:bg-light-primaryAccentHover duration-200'
+          onClick={handleSubmit}>Submit</button>
+      </div>
+  );
+}
+
+export default InputForm;

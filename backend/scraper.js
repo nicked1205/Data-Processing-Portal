@@ -58,6 +58,8 @@ export async function scrapeProduct(url) {
     const scraper = siteScrapers[domain];
     const data = await scraper(page);
 
+    data.sourceUrl = url;
+
     await browser.close();
     return data;
   } catch (err) {
