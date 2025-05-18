@@ -9,13 +9,3 @@
   transition-property: opacity;
   transition-duration: 300ms;
 }
-
-.dimmer.dHidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.dimmer.dVisible {
-  opacity: 1;
-  pointer-events: auto;
-}

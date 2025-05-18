@@ -20,8 +20,8 @@ module.exports = {
           primaryAccentHover: '#3B82F6',
         },
         dark: {
-          background: '#0B131A',
-          surface: '#111B26',
+          background: '#222222',
+          surface: '#282828',
           primaryText: '#D0D6DD',
           secondaryText: '#7F95A1',
           primaryAccent: '#10A37F',

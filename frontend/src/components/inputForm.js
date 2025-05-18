@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function InputForm() {
+function InputForm({ setOpenInstructions, setOpenDocumentations }) {
     const [urls, setUrls] = useState("");
     const [instruction, setInstruction] = useState("");
 
@@ -18,11 +18,12 @@ function InputForm() {
     const handleSubmit = async () => {
       for (const url of urls.split('\n')) {
           try {
-          console.log(`Fetching data for ${url}...`);
-          const data = await fetchProductData(url.trim());
-          console.log(data);
+            console.log(`Fetching data for ${url}...`);
+            const data = await fetchProductData(url.trim());
+            console.log(data);
+            console.log(`Turning data into Excel file based on prompt`);
           } catch (error) {
-          console.error(`Error fetching data for ${url}:`, error);
+            console.error(`Error fetching data for ${url}:`, error);
           }
       }
     }
@@ -48,12 +49,37 @@ function InputForm() {
   return (
     <div className='w-3/5 h-3/5 absolute-center
       flex flex-col items-center justify-center gap-3 rounded-3xl
-      bg-light-surface bg-opacity-30'>
-        <h2 className='text-light-primaryText font-bold text-xl p-2'>Welcome to the Data Processing Portal</h2>
+      bg-light-surface dark:bg-opacity-10 bg-opacity-30 duration-300'>
+        <div className='text-2xl text-center p-2'>
+          <h2 className='text-light-primaryText dark:text-dark-primaryText font-bold duration-300'>
+            Welcome to the Data Processing Portal
+          </h2>
+          <h3 className='text-light-primaryText dark:text-dark-primaryText text-[0.7em] duration-300'>
+            We advise you to read{' '}
+            <span
+              className='cursor-pointer underline hover:text-light-primaryAccent dark:hover:text-dark-primaryAccent'
+              onClick={() => {
+                setOpenInstructions(true);
+              }}
+            >
+              instructions
+            </span>{' '}
+            and{' '}
+            <span
+              className='cursor-pointer underline hover:text-light-primaryAccent dark:hover:text-dark-primaryAccent'
+              onClick={() => {
+                setOpenDocumentations(true);
+              }}
+            >
+              documentations
+            </span>{' '}
+            for the best experience
+          </h3>
+        </div>
         <div className='relative h-1/5 w-3/4'>
           <textarea
-            className='h-full w-full bg-light-surface text-light-primaryText resize-none rounded-lg p-2 pr-12 
-              focus:outline-light-divider placeholder:text-light-secondaryText'
+            className='h-full w-full bg-light-surface dark:bg-dark-surface text-light-primaryText dark:text-dark-primaryText resize-none rounded-lg p-2 pr-12 
+              focus:outline-light-divider dark:focus:outline-dark-divider placeholder:text-light-secondaryText dark:placeholder:text-dark-secondaryText duration-300'
             value={urls}
             onChange={(e) => setUrls(e.target.value)}
             placeholder="Enter product URLs (one per line)"
@@ -61,11 +87,11 @@ function InputForm() {
           { urls && (
           <div className='absolute top-0 right-0 w-12 h-full flex flex-col p-2 gap-2'>
             <span className='w-full aspect-square p-1.5 rounded-full 
-              hover:bg-light-background hover:bg-opacity-70 duration-300 hover:cursor-pointer'
+              hover:bg-light-background dark:hover:bg-opacity-10 hover:bg-opacity-70 duration-300 hover:cursor-pointer'
               onClick={() => {
                 setUrls('');
               }}>
-              <svg fill="#1E3A8A" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.428 482.429">
+              <svg class="fill-light-primaryText dark:fill-dark-primaryText duration-300" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.428 482.429">
                 <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                 <g id="SVGRepo_iconCarrier"> 
@@ -85,8 +111,8 @@ function InputForm() {
         </div>
         <div className='h-2/5 w-3/4 relative'>
           <textarea
-            className='h-full w-full bg-light-surface text-light-primaryText resize-none rounded-lg p-2 pr-10 
-              focus:outline-light-divider placeholder:text-light-secondaryText'
+            className='h-full w-full bg-light-surface dark:bg-dark-surface text-light-primaryText dark:text-dark-primaryText resize-none rounded-lg p-2 pr-10 
+              ocus:outline-light-divider dark:focus:outline-dark-divider placeholder:text-light-secondaryText dark:placeholder:text-dark-secondaryText duration-300'
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}
             placeholder="Enter curation instructions"
@@ -94,11 +120,11 @@ function InputForm() {
           { instruction && (
             <div className='absolute top-0 right-0 w-12 h-full flex flex-col p-2 gap-2'>
               <span className='w-full aspect-square p-1.5 rounded-full 
-                hover:bg-light-background hover:bg-opacity-70 duration-300 hover:cursor-pointer'
+                hover:bg-light-background dark:hover:bg-opacity-10 hover:bg-opacity-70 duration-300 hover:cursor-pointer'
                 onClick={() => {
                   setInstruction('');
                 }}>
-                <svg fill="#1E3A8A" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.428 482.429">
+                <svg class="fill-light-primaryText dark:fill-dark-primaryText duration-300" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.428 482.429">
                   <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                   <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                   <g id="SVGRepo_iconCarrier"> 
@@ -117,8 +143,8 @@ function InputForm() {
           )}
         </div>
         <button 
-          className='bg-light-primaryAccent pt-1 pb-1 pl-2 pr-2 rounded-xl text-light-primaryText 
-            hover:bg-light-primaryAccentHover duration-200'
+          className='bg-light-primaryAccent dark:bg-dark-primaryAccent pt-1 pb-1 pl-2 pr-2 rounded-xl text-light-primaryText dark:text-dark-primaryText 
+            hover:bg-light-primaryAccentHover dark:hover:bg-dark-primaryAccentHover duration-200'
           onClick={handleSubmit}>Submit</button>
       </div>
   );
