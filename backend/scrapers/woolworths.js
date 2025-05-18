@@ -16,6 +16,7 @@ async function scrapeBadges(page) {
     const badges = [];
 
     const container = document.querySelector('div[class^="product-roundels_component_roundel-container"]');
+    if (!container) return [];
     badgeImages = container.querySelectorAll('img');
 
     badgeImages.forEach(img => {

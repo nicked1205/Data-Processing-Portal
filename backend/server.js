@@ -29,39 +29,36 @@ app.post('/api/scrape', async (req, res) => {
 });
 
 // Generate Excel from scraped data
-app.post('/api/generate-excel', async (req, res) => {
-  const { scrapedData, instructions, fileName = 'products.xlsx' } = req.body;
+app.post('/api/generate-csv', async (req, res) => {
+  const { scrapedData, instructions } = req.body;
   if (!scrapedData) return res.status(400).json({ error: 'scrapedData required' });
   if (!instructions || typeof instructions !== 'string') return res.status(400).json({ error: 'instructions required' });
 
   try {
     const prompt = `
-You are a helpful assistant. You are given these JSON arrays, each is ONE product's data:
+You are a helpful data assistant. You are given these JSON arrays, each containing one product's data:
 
 ${JSON.stringify(scrapedData)}
 
-And these instructions:
+And these instructions for the spreadsheet:
 ${instructions}
 
-Follow these steps:
+Please follow these steps:
 
-1) Understand what product information is requested from the instructions
+1) Carefully review the instructions to identify the exact product information needed, including required columns and formatting.
 
-2) Generate an Excel file (.xlsx) as a base64-encoded string, with each column being each requested information and do any column, colour, font, ... customizations mentioned in the instructions.
+2) For each product (each JSON object), extract the requested information for each column based on the instructions.  
+- Ignore any fields that are null in the JSON data.
+- If data is a number, try to output it as the same form as the one found in the JSON object
+- If information is missing or unclear, try to infer or combine details from the product data.
+- If that doesn't work, try visiting the source url in each JSON object to find that information.
+- If data still cannot be found, use "Information not found" for that column.
 
-3) For each JSON array, do:
+3) Generate a CSV-formatted text output with a header row and one row per product.  
+- Make sure the CSV columns exactly match the instructions.  
+- Use commas as separators and properly escape any commas or quotes inside fields.
 
-- Based on the instruction, filter out or find the needed infomation, format it based onthe instructions (if exists) and then put it in the corresponding column.
-
-- If an information is not found, try look through all of the JSON array of data to piece together the needed information yourself (might be in the long texts, or is within other information, or you need to combine different information to make that information).
-
-- If this still doesn't work, put 'Information not found'.
-
-- Each product will be one row in the Excel file, so if you finished your search for every requested information of a product, move down a row and move on to the next product's JSON array
-
-End of steps.
-
-Return only the base64 string of the Excel file. Do not include any extra explanation or formatting.
+4) Return only the CSV content as plain text, without any additional explanation, formatting, or code fences.
 `;
 
     const completion = await openai.chat.completions.create({
@@ -70,12 +67,12 @@ Return only the base64 string of the Excel file. Do not include any extra explan
       temperature: 0,
     });
 
-    const base64Excel = completion.choices[0].message.content.trim();
+    const csv = completion.choices[0].message.content.trim().replace(/^```csv\s*/, '').replace(/```$/, '').trim();
 
-    res.json({ fileName, base64Excel });
+    res.json({ csv });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Failed to generate Excel' });
+    res.status(500).json({ error: 'Failed to generate Csv' });
   }
 });
 

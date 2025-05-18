@@ -1,47 +1,69 @@
 import { useState, useEffect } from "react";
+import * as XLSX from 'xlsx';
 
 function DownloadPanel({ stage, setStage }) {
   const [isReady, setIsReady] = useState(false);
-  const [base64Excel, setBase64Excel] = useState(null);
+  const [csvString, setCsvString] = useState(null);
   const [fileName, setFileName] = useState('products')
 
   useEffect(() => {
+    console.log(stage);
     if (stage === 3) {
-      const storedBase64 = localStorage.getItem("excelFileBase64");
-      if (storedBase64 && storedBase64.length > 0) {
-        setBase64Excel(storedBase64);
+      const storedCsvString = localStorage.getItem("csvString");
+      console.log(storedCsvString)
+      if (storedCsvString && storedCsvString.length > 0) {
+        setCsvString(storedCsvString);
         setIsReady(true);
       } else {
         setIsReady(false);
       }
-    } else {
-      setIsReady(false);
     }
   }, [stage]);
 
-  const downloadExcel = (base64) => {
-    const binaryString = window.atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    const blob = new Blob([bytes], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
+// Create downloadable CSV file
+  const downloadCsv = () => {
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'products.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
-  const handleDownload = () => {
+  const downloadExcel = () => {
+    // Parse CSV string into a workbook
+    const workbook = XLSX.read(csvString, { type: 'string' });
+    
+    // Create a new workbook and append worksheet
+    const newWorkbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(newWorkbook, workbook.Sheets[workbook.SheetNames[0]], 'Sheet1');
+
+    // Write workbook to binary array
+    const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'array' });
+
+    // Create Blob and trigger download
+    const blob = new Blob([wbout], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'products.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadExcel = () => {
     if (!isReady) return;
-    downloadExcel(base64Excel);
+    downloadExcel();
+  };
+
+  const handleDownloadCsv = () => {
+    if (!isReady) return;
+    downloadCsv();
   };
 
   return (
@@ -75,11 +97,18 @@ function DownloadPanel({ stage, setStage }) {
         </div>
       )}
       { stage === 4 && (
-        <button className="bg-light-primaryAccent dark:bg-dark-primaryAccent pt-1 pb-1 pl-2 pr-2 rounded-xl text-light-primaryText dark:text-dark-primaryText 
-            hover:bg-light-primaryAccentHover dark:hover:bg-dark-primaryAccentHover duration-200"
-            onClick={handleDownload} disabled={!isReady}>
-          {isReady ? "Download Excel" : "Preparing file..."}
-        </button>
+        <div className="flex flex-row gap-4">
+          <button className="bg-light-primaryAccent dark:bg-dark-primaryAccent pt-1 pb-1 pl-2 pr-2 rounded-xl text-light-primaryText dark:text-dark-primaryText 
+              hover:bg-light-primaryAccentHover dark:hover:bg-dark-primaryAccentHover duration-200"
+              onClick={handleDownloadExcel} disabled={!isReady}>
+            {isReady ? "Download Excel" : "Preparing file..."}
+          </button>
+          <button className="bg-light-primaryAccent dark:bg-dark-primaryAccent pt-1 pb-1 pl-2 pr-2 rounded-xl text-light-primaryText dark:text-dark-primaryText 
+              hover:bg-light-primaryAccentHover dark:hover:bg-dark-primaryAccentHover duration-200"
+              onClick={handleDownloadCsv} disabled={!isReady}>
+            {isReady ? "Download Csv" : "Preparing file..."}
+          </button>
+        </div>
       )}
     </div>
   );

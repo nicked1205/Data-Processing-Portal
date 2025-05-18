@@ -1,37 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import { fetchProductData, generateExcel } from '../api/excelGeneration';
+import { fetchProductData, generateCsv } from '../api/apis';
 
 function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setStatus, stage }) {
     const [urls, setUrls] = useState("");
     const [instruction, setInstruction] = useState("");
-      
+    const [error, setError] = useState("");
+
+    const isValidUrl = (string) => {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    };
+
     const handleSubmit = async () => {
+      setError("");
+
+      // Basic validation
+      if (!urls.trim()) {
+        setError("Please enter at least one product URL.");
+        return;
+      }
+
+      // Check all URLs are valid
+      const urlList = urls.split('\n').map(u => u.trim()).filter(u => u.length > 0);
+      if (urlList.length === 0) {
+        setError("Please enter at least one valid product URL.");
+        return;
+      }
+      for (const u of urlList) {
+        if (!isValidUrl(u)) {
+          setError(`Invalid URL detected: "${u}"`);
+          return;
+        }
+      }
+
+      if (!instruction.trim()) {
+        setError("Please enter the curation instructions.");
+        return;
+      }
+
       let scrapedData = [];
       setStage(1);
-      const urlList = urls.split('\n');
-      const length = urlList.length;
-      for (let index = 0; index < length; index++) {
+
+      for (let index = 0; index < urlList.length; index++) {
         const url = urlList[index];
         try {
           console.log(`Fetching data for ${url}...`);
-          setStatus(`Scraping data from URL... (${index + 1}/${length})`);
-          const data = await fetchProductData(url.trim());
+          setStatus(`Scraping data from URL... (${index + 1}/${urlList.length})`);
+          const data = await fetchProductData(url);
           console.log(data);
-          scrapedData.push(data);
+          if (data) scrapedData.push(data);
         } catch (error) {
           console.error(`Error fetching data for ${url}:`, error);
         }
       }
+
       setStage(2);
       setStatus(`Turning scraped data into Excel file...`);
       console.log('Turning the scraped data into Excel base64');
-      const { base64Excel: base64 } = await generateExcel(
-        scrapedData,
-        instruction,
-        'products.xlsx'
-      );
-      localStorage.setItem("excelFileBase64", base64);
-    }
+
+      try {
+        const { csv: csvString } = await generateCsv(scrapedData, instruction);
+        localStorage.setItem("csvString", csvString);
+        console.log(csvString);
+        setStage(3);
+      } catch (e) {
+        setError("Failed to generate CSV from scraped data.");
+        console.error(e);
+        setStage(0);
+      }
+    };
 
     useEffect(() => {
       const savedUrl = localStorage.getItem('urls');
@@ -52,9 +93,9 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
     }, [instruction]);
 
   return (
-    <div className={`w-3/5 h-3/5 absolute-center
+    <div className={`w-3/5 absolute-center
       flex flex-col items-center justify-center gap-3 rounded-3xl overflow-hidden
-      bg-light-surface dark:bg-opacity-10 bg-opacity-30 duration-300 ${stage !== 0 ? 'h-0' : ''}`}>
+      bg-light-surface dark:bg-opacity-10 bg-opacity-30 duration-300 ${stage >= 1 ? 'h-0' : 'h-3/5'}`}>
         <div className='text-2xl text-center p-2'>
           <h2 className='text-light-primaryText dark:text-dark-primaryText font-bold duration-300'>
             Welcome to the Data Processing Portal
@@ -86,7 +127,10 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
             className='h-full w-full bg-light-surface dark:bg-dark-surface text-light-primaryText dark:text-dark-primaryText resize-none rounded-lg p-2 pr-12 
               focus:outline-light-divider dark:focus:outline-dark-divider placeholder:text-light-secondaryText dark:placeholder:text-dark-secondaryText duration-300 custom-scrollbar'
             value={urls}
-            onChange={(e) => setUrls(e.target.value)}
+            onChange={(e) => {
+              setUrls(e.target.value);
+              setError('');
+            }}
             placeholder="Enter product URLs (one per line)"
           />
           { urls && (
@@ -119,7 +163,10 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
             className='h-full w-full bg-light-surface dark:bg-dark-surface text-light-primaryText dark:text-dark-primaryText resize-none rounded-lg p-2 pr-10 
               ocus:outline-light-divider dark:focus:outline-dark-divider placeholder:text-light-secondaryText dark:placeholder:text-dark-secondaryText duration-300 custom-scrollbar'
             value={instruction}
-            onChange={(e) => setInstruction(e.target.value)}
+            onChange={(e) => {
+              setInstruction(e.target.value);
+              setError('');
+            }}
             placeholder="Enter curation instructions"
           />
           { instruction && (
@@ -147,6 +194,11 @@ function InputForm({ setOpenInstructions, setOpenDocumentations, setStage, setSt
             </div>
           )}
         </div>
+        {error !== '' && (
+          <div className="text-light-error dark:text-dark-error text-center font-semibold">
+            {error}
+          </div>
+        )}
         <button 
           className='bg-light-primaryAccent dark:bg-dark-primaryAccent pt-1 pb-1 pl-2 pr-2 rounded-xl text-light-primaryText dark:text-dark-primaryText 
             hover:bg-light-primaryAccentHover dark:hover:bg-dark-primaryAccentHover duration-200'

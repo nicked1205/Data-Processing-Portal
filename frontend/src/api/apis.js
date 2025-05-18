@@ -9,12 +9,12 @@ export const fetchProductData = async (url) => {
     return data;
 }
 
-export const generateExcel = async (scrapedData, instructions) => {
-    const res = await fetch("/api/generate-excel", {
+export const generateCsv = async (scrapedData, instructions) => {
+    const res = await fetch("http://localhost:4000/api/generate-csv", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scrapedData, instructions }),
     });
-    if (!res.ok) throw new Error("Failed to generate Excel");
+    if (!res.ok) throw new Error("Failed to generate Csv");
     return res.json();
 }

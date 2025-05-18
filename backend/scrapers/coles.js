@@ -22,6 +22,7 @@ async function scrapeAttributes(page) {
   return await page.evaluate(() => {
     const attributes = [];
     const container = document.querySelector('.dietary-allergen-list');
+    if (!container) return [];
 
     const attributeElements = container.querySelectorAll('span');
 
