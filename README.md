@@ -89,6 +89,13 @@ node server.js
 
 Both servers should now be running locally. Open the frontend in your browser by navigating to http://localhost:3000.
 
+## Running the working solution
+
+Since backend hosting both cost a lot of money and a tonne of setup, these are the steps to run the backend on localhost:
+
+- Follow the run the project locally (You don't need to start the frontend)
+- After you have started the backend (Express server), the deployment will work just fine.
+
 ## Additional Info
 
 You can read more about the project documentations and isntructions within the website.
