@@ -33,7 +33,7 @@ Before running the project locally, ensure that you have the following tools ins
 Clone the project to your local machine:
 
 ```git
-git clone https://github.com/your-username/data-processing-portal.git
+git clone https://github.com/nicked1205/Data-Processing-Portal.git
 cd data-processing-portal
 ```
 
@@ -73,21 +73,21 @@ PORT=4000
 
 To start the backend and frontend servers:
 
-#### Start the backend (Express server):
+#### Start the backend (Express server)
 
 ```bash
 cd ./backend
 npm start
 ```
 
-#### Start the frontend (React app):
+#### Start the frontend (React app)
 
 ```bash
 cd ./frontend
 node server.js
 ```
 
-Both servers should now be running locally. Open the frontend in your browser by navigating to http://localhost:3000.
+Both servers should now be running locally. Open the frontend in your browser by navigating to [http://localhost:3000](http://localhost:3000).
 
 ## Running the working solution
 
